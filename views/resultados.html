@@ -1,0 +1,237 @@
+ @html.extend('layout',function(model){ @html.block('content',function(model){
+
+
+
+<link data-require="bootstrap-css@2.3.2" data-semver="2.3.2" rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+<script data-require="angular.js@1.1.5" data-semver="1.1.5" src="http://code.angularjs.org/1.1.5/angular.min.js"></script>
+<script data-require="angular-ui-bootstrap@0.3.0" data-semver="0.3.0" src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.3.0.min.js"></script>
+
+
+<div data-ng-app="movieApp">
+    <div data-ng-controller="movieCtrl">
+        <!-- Start Home Page Slider -->
+        <section id="home">
+            <!-- Carousel -->
+            <div class="section purchase">
+                <div class="container">
+
+                    <!-- Start Video Section Content -->
+                    <div class="section-video-content text-center">
+
+                        <!-- Start Animations Text -->
+                        <h1 class="fittext wite-text uppercase tlt">
+               Buscar
+          </h1>
+                        <!-- End Animations Text -->
+                        <div class="widget widget-search ">
+<form>
+                            <label for="nombre"><h2>titulo</h2></label>
+                            <input type="search" name="nombre" class="form-inline" id="nombre" data-ng-model="names"  placeholder="Enter Keywords..." style="min-height:20px; max-height:20px;">
+
+
+                            <!--label for="tipo">year</label-->
+                            <input type="hidden" name="tipo" id="tipo" data-ng-model="years" value="">
+
+                            <button class="search-btn" type="submit" data-ng-click="getMovies()"><i class="fa fa-search"></i></button>
+
+</from>
+
+
+                        </div>
+
+
+                    </div>
+                    <!-- End Section Content -->
+
+                </div>
+                <!-- .container -->
+            </div>
+            <!-- /carousel -->
+        </section>
+        <!-- Start Content -->
+        <div id="content">
+
+            <h4 data-ng-show="valor">Resultados : {{movies.totalResults}} peliculas encontradas</h4>
+            <!-- .container -->
+            <!-- End Services Section -->
+
+
+            <!-- Start Portfolio Section -->
+            <!-- Start Team Members -->
+            <div class="row">
+
+
+
+                <div class="col-md-3 col-sm-6 col-xs-12" data-animation="fadeIn" data-animation-delay="03" data-ng-repeat="movie in movies.Search" data-ng-click="getDetailMovies(movie.imdbID)">
+
+                    <div class="team-member modern">
+                        <div class="member-photo">
+
+
+                            <div data-ng-if="movie.Poster != 'N/A'">
+                                <img src="{{movie.Poster}}" alt="" style="width:400px; min-height:400px; max-height:400px;">
+                            </div>
+                            <div data-ng-if="movie.Poster == 'N/A'">
+                                <img src="images/team/img404.jpg" alt="" style="width:400px; min-height:400px; max-height:400px;">
+                            </div>
+
+                            <div class="member-name">{{movie.Title}} <span> {{movie.Year}}</span>
+                            </div>
+                        </div>
+                        <!-- Memebr Words -->
+
+                        <!-- Start Progress Bar 1 -->
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-primary" data-progress-animation="96%" data-appear-animation-delay="400">
+                                <span class="percentage">96%</span>
+                            </div>
+                        </div>
+                        <!-- Start Progress Bar 2 -->
+
+
+                    </div>
+                </div>
+
+
+
+            </div>
+
+            <ul>
+                <li ng-repeat="todo in filteredTodos.Search">{{todo.Title}}</li>
+            </ul>
+            <div class="container theme-showcase" data-ng-show="valor">
+                <div data-pagination="" data-num-pages="numPages()" data-current-page="currentPage" data-max-size="maxSize" data-boundary-links="true"></div>
+            </div>
+
+
+            <!-- End Memebr 1 -->
+
+            <!-- End Team Members -->
+            <!-- End Portfolio Section -->
+
+
+            <!-- Divider -->
+            <div class="hr1 margin-60"></div>
+
+        </div>
+        <!-- .container -->
+        <!-- End News & Skill Section -->
+
+
+        <!-- Divider -->
+        <div class="hr1 margin-60"></div>
+
+
+
+    </div>
+
+</div>
+
+<!-- End Content -->
+
+
+
+
+
+<script type="text/javascript">
+
+
+
+ console.log(window.location.search);
+
+    var searchName;
+    var app = angular.module("movieApp", ['ui.bootstrap'], function($locationProvider) {
+$locationProvider.html5Mode(true);
+});
+
+
+    var pageMovie = 1;
+    var movies = [];
+    var nameMovie;
+    app.controller("movieCtrl", function($scope,$location, $http, $log) {
+
+        $scope.movies = [];
+        $scope.filteredTodos = [];
+        $scope.currentPage = 1;
+        $scope.numPerPage = 10;
+        $scope.maxSize = 10;
+
+        $scope.valor = false;
+
+
+
+        $scope.getMovies = function() {
+
+        searchName=$location.search();
+        console.log(searchName.nombre);
+
+                      if (typeof searchName != "undefined" ) {
+                          nameMovie=searchName.nombre;
+
+                      }else{
+
+                            nameMovie = $scope.names;
+                      }
+
+            if ((typeof nameMovie != "undefined" && nameMovie != "") ) {
+
+
+                var yearMovie = $scope.years;
+                pageMovie = $scope.currentPage;
+
+                $http.post("/searchMovie", {
+                    nombre: nameMovie,
+                    year: yearMovie,
+                    page: pageMovie
+                }).success(
+                    function(data, status, header, config) {
+
+                        $scope.movies = data;
+                        console.log(movies);
+                        console.log(movies.totalResults);
+
+                    }).error(function(data, status, header, config) {
+                    // body...
+
+                    console.log(status);
+                });
+
+                $scope.valor = true;
+            };
+
+
+        };
+        $scope.numPaginas = $scope.movies.totalResults / $scope.numPerPage;
+
+
+        $scope.numPages = function() {
+            return Math.ceil($scope.movies.totalResults / $scope.numPerPage);
+        };
+
+        $scope.$watch('currentPage + numPerPage', function() {
+            var pagina = $scope.currentPage;
+            $scope.currentPage = pagina;
+            $scope.getMovies();
+            console.log(pagina);
+
+        });
+
+        $scope.getDetailMovies = function(movieId)
+
+        {
+
+            var url = "/searchDetail?nombre=" + movieId;
+            // $log.log(url);
+            // $window.location.href = url;
+            window.location.assign(url)
+        };
+
+        ///////////////////////////
+    });
+</script>
+
+
+
+
+<!-- End models -->
+}); })

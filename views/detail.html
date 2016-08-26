@@ -1,0 +1,169 @@
+ @html.extend('layout',function(model){ @html.block('content',function(model){
+
+
+<script data-require="angular.js@1.1.5" data-semver="1.1.5" src="http://code.angularjs.org/1.1.5/angular.min.js"></script>
+<script data-require="angular-ui-bootstrap@0.3.0" data-semver="0.3.0" src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.3.0.min.js"></script>
+
+<!-- Start Content -->
+<div data-ng-app="movieApp" >
+    <div data-ng-controller="movieCtrl">
+        <div id="content">
+            <div class="container">
+                <div class="project-page row">
+
+                    <!-- Start Single Project Slider -->
+                    <div class="col-md-8">
+                        <div class="touch-slider project-slider">
+
+                            <div class="item">
+                                <a class="lightbox" title="@model.movieResult.Title" href="@model.movieResult.Poster" data-lightbox-gallery="gallery2">
+                                    <div class="thumb-overlay"><i class="fa fa-arrows-alt"></i></div>
+
+
+                                    @if (@model.movieResult.Poster != 'N/A') {
+                                    <img alt="" src="@model.movieResult.Poster" style="width:100%;"> } else {
+                                    <img src="images/team/img404.jpg" alt="" style="width:100%;">}
+
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- End Single Project Slider -->
+
+
+
+
+
+                    <!-- Start Project Content -->
+                    <div class="project-content col-md-4">
+                        <h4><span>@model.movieResult.Title</span></h4>
+                        <p>@model.movieResult.Plot</p>
+                        <h4><span>Project Details</span></h4>
+                        <ul>
+                            <li><strong>Year:</strong> @model.movieResult.Year</li>
+                            <li><strong>Runtime</strong> @model.movieResult.Runtime</li>
+                            <li><strong>Genre</strong>@model.movieResult.Genre</li>
+                            <li><strong>Writer</strong>@model.movieResult.Writer</li>
+                            <li><strong>Writer</strong>@model.movieResult.TomatoRanking</li>
+                        </ul>
+                        <div class="post-share">
+                            <span>Ranking:</span>
+                            <a class="twitter"><i class="glyphicon glyphicon-star"></i></a>
+                            <a class="gplus"><i class="glyphicon glyphicon-star"></i></a>
+                            <a class="linkedin"><i class="glyphicon glyphicon-star"></i></a>
+                            <a class="flickr"><i class="glyphicon glyphicon-star-empty"></i></a>
+                            <a class="mail"><i class="glyphicon glyphicon-star-empty"></i></a>
+                        </div>
+                    </div>
+                    <!-- End Project Content -->
+
+                </div>
+
+
+
+                <!-- Start Recent Projects Carousel -->
+              
+
+
+
+ <div class="widget widget-popular-posts">
+              <h4>Popular Post <span class="head-line"></span></h4>
+              <ul>
+                <li data-ng-repeat="movie in movies.Search" data-ng-click="getDetailMovies(movie.imdbID)">
+                  <div class="widget-thumb">
+
+
+                        <div data-ng-if="movie.Poster != 'N/A'">
+                            <img src="{{movie.Poster}}" alt="" style="width:400px; min-height:500px; max-height:500px;">
+                        </div>
+                        <div data-ng-if="movie.Poster == 'N/A'">
+                            <img src="images/team/img404.jpg" alt=""  style="width:400px; min-height:500px; max-height:500px;">
+                        </div>
+                    
+                  </div>
+                  <div class="widget-content">
+                    <h5><a href="#">{{movie.Title}}</a></h5>
+                    <span>{{movie.Year}}</span>
+                  </div>
+                  <div class="clearfix"></div>
+                </li>
+                
+              </ul>
+            </div>
+
+
+
+ 
+                <!-- End Recent Projects Carousel -->
+
+            </div>
+        </div>
+        <!-- End Content -->
+
+
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+    
+
+    var app = angular.module("movieApp", ['ui.bootstrap']);
+    var pageMovie = 1;
+    var movies = [];
+    var nameMovie;
+    app.controller("movieCtrl", function($scope, $http, $log) {
+
+        $scope.movies = [];
+        $scope.filteredTodos = [];
+        $scope.currentPage = 1;
+        $scope.numPerPage = 10;
+        $scope.maxSize = 10;
+ 
+
+
+        
+
+
+            nameMovie = $scope.names;
+            var yearMovie = $scope.years;
+            pageMovie = $scope.currentPage;
+
+            $http.post("/random", {}).success(
+                function(data, status, header, config) {
+
+                    $scope.movies = data;
+                    console.log(movies);
+                    console.log(movies.totalResults);
+
+                }).error(function(data, status, header, config) {
+                // body...
+
+                console.log(status);
+            });
+
+
+
+
+      
+        $scope.getDetailMovies = function(movieId)
+
+        {
+
+            var url = "/searchDetail?nombre=" + movieId;
+            // $log.log(url);
+            // $window.location.href = url;
+            window.location.assign(url)
+        };
+
+        ///////////////////////////
+    });
+
+
+</script>
+
+
+<!-- End models -->
+}); })

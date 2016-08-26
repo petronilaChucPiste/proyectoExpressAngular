@@ -1,0 +1,5 @@
+{
+    "apiKey" : "7bf5ce9f",
+    "apiBaseUrl":"http://www.omdbapi.com",
+    "apiPosterBaseUrl":"http://img.omdbapi.com/?apikey="
+}
